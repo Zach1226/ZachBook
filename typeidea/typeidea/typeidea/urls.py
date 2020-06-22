@@ -33,7 +33,11 @@ from .autocomplete import CategoryAutocomplete, TagAutocomplete
 from django.conf import settings
 from django.conf.urls import url, include
 from django.conf.urls.static import static
-from blog.apis import post_list, PostList
+from rest_framework.routers import DefaultRouter
+from blog.apis import PostViewSet
+
+router = DefaultRouter()
+router.register(r'post', PostViewSet, basename='api-post')
 
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name='index'),
@@ -56,6 +60,6 @@ urlpatterns = [
     url(r'^tag-autocomplete/$',
         TagAutocomplete.as_view(),
         name='tag-autocomplete'),
-    url(r'^api/post/', PostList.as_view(), name='post-list'),
+    url(r'^api/', include(router.urls, namespace="api")),
     url(r'^ckeditor/', include('ckeditor_uploader.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
