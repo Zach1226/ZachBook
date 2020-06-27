@@ -1,16 +1,12 @@
 from rest_framework import viewsets
-from rest_framework.permissions import IsAdminUser
 
-from .models import Post, Category
-from .serializers import (
-    PostSerializer,
-    PostDetailSerializer,
-    CategorySerializer,
-    CategoryDetailSerializer,
-)
+from .models import Post, Category, Tag
+from .serializers import (PostSerializer, PostDetailSerializer,
+                          CategorySerializer, CategoryDetailSerializer,
+                          TagSerializer, TagDetailSerializer)
 
 
-class PostViewSet(viewsets.ModelViewSet):
+class PostViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = PostSerializer
     queryset = Post.objects.filter(status=Post.STATUS_NORMAL)
 
@@ -22,8 +18,11 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def filter_queryset(self, queryset):
         category_id = self.request.query_params.get('category')
+        tag_id = self.request.query_params.get('tag')
         if category_id:
             queryset = queryset.filter(category_id=category_id)
+        elif tag_id:
+            queryset = queryset.filter(tag_id=tag_id)
         return queryset
 
 
@@ -33,4 +32,13 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         self.serializer_class = CategoryDetailSerializer
+        return super().retrieve(request, *args, **kwargs)
+
+
+class TagViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = TagSerializer
+    queryset = Tag.objects.filter(status=Tag.STATUS_NORMAL)
+
+    def retrieve(self, request, *args, **kwargs):
+        self.serializer_class = TagDetailSerializer
         return super().retrieve(request, *args, **kwargs)
