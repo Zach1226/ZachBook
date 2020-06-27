@@ -34,10 +34,12 @@ from django.conf import settings
 from django.conf.urls import url, include
 from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
-from blog.apis import PostViewSet
+from rest_framework.documentation import include_docs_urls
+from blog.apis import PostViewSet, CategoryViewSet
 
 router = DefaultRouter()
 router.register(r'post', PostViewSet, basename='api-post')
+router.register(r'category', CategoryViewSet, basename='api-category')
 
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name='index'),
@@ -61,5 +63,6 @@ urlpatterns = [
         TagAutocomplete.as_view(),
         name='tag-autocomplete'),
     url(r'^api/', include(router.urls, namespace="api")),
+    url(r'^api/docs/', include_docs_urls(title='typeidea apis')),
     url(r'^ckeditor/', include('ckeditor_uploader.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
